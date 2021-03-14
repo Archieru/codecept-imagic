@@ -4,28 +4,32 @@ class SearchCest
 {
     public function videoPreviewTest(AcceptanceTester $I)
     {
+        $mainSearch = 'form.search2 ';
+        $videoPreview = 'div.thumb-image';
+        $videoPlaying = $videoPreview.' video';
+
         // $I->amOnPage('/video/search?text=ураган');
         $I->amOnPage('/video');
         // $I->submitForm('.search2', array('text' => 'ураган'));
-        $I->fillField('form.search2 input','ураган');
-        $I->click('form.search2 button');
+        $I->fillField($mainSearch.'input','ураган');
+        $I->click($mainSearch.'button');
 
-        $I->waitForElement('div.thumb-image', 10);
-        $I->moveMouseOver('div.thumb-image');
-        $I->waitForElementClickable('div.thumb-image video', 5);
-        $I->seeElement('div.thumb-image video');
+        $I->waitForElementClickable($videoPreview, 10);
+        $I->moveMouseOver($videoPreview);
+        $I->waitForElementClickable($videoPlaying, 5);
+        $I->seeElement($videoPlaying);
 
-        $video_url = $I->grabAttributeFrom('div.thumb-image video', 'src');
-        $I->assertNotFalse(strstr($video_url, '.mp4'), 'The link to the video should contain .mp4');
+        $videoUrl = $I->grabAttributeFrom($videoPlaying, 'src');
+        $I->assertNotFalse(strstr($videoUrl, '.mp4'), 'The link to the video should contain .mp4');
 
-        $I->makeElementScreenshot('div.thumb-image video', 'before');
+        $I->makeElementScreenshot($videoPlaying, 'before');
         $I->wait(1);
-        $I->makeElementScreenshot('div.thumb-image video', 'after');
+        $I->makeElementScreenshot($videoPlaying, 'after');
 
-        $before_image = new Imagick("./tests/_output/debug/before.png");
-        $after_image = new Imagick("./tests/_output/debug/after.png");
+        $before = new Imagick(codecept_output_dir()."/debug/before.png");
+        $after = new Imagick(codecept_output_dir()."/debug/after.png");
 
-        $result = $before_image->compareImages($after_image, 1);
-        $I->assertNotEquals($result[1], 0, 'Images should be different'); // same images have the difference = 0
+        $difference = $before->compareImages($after, 1);
+        $I->assertNotEquals($difference[1], 0, 'Images should be different'); // same images have the difference = 0
     }
 }
